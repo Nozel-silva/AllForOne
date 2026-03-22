@@ -66,10 +66,11 @@ function displayResults(variants, originalUrl) {
 
   results.innerHTML = variants.map(v => {
     const quality = v.height ? `${v.height}p` : 'Download';
+    const proxyUrl = `/api/video?downloadUrl=${encodeURIComponent(v.url)}`;
     return `
       <div class="video-option">
         <span>${quality} — ${v.bitrate ? (v.bitrate / 1000).toFixed(0) + ' kbps' : ''}</span>
-        <a href="${v.url}" download target="_blank">Download</a>
+        <a href="${proxyUrl}" download="twitter_video.mp4">Download</a>
       </div>
     `;
   }).join('');
