@@ -50,27 +50,17 @@ function extractTweetId(url) {
 }
 
 async function fetchVideoLinks(tweetId) {
-  const proxy = 'https://corsproxy.io/?';
-  const url = `https://twitsave.com/info?url=https://twitter.com/i/status/${tweetId}`;
+  const res = await fetch(`https://api.fxtwitter.com/status/${tweetId}`);
+  const data = await res.json();
 
-  const res = await fetch(proxy + encodeURIComponent(url));
-  const html = await res.text();
+  const media = data?.tweet?.media?.videos;
+  if (!media || !media.length) throw new Error('No video found in this tweet.');
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const variants = media[0].variants
+    .filter(v => v.content_type === 'video/mp4')
+    .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0));
 
-  const downloadButtons = doc.querySelectorAll('a[href*=".mp4"]');
-
-  if (!downloadButtons.length) throw new Error('No video found in this tweet.');
-
-  const variants = Array.from(downloadButtons).map(a => {
-    const href = a.getAttribute('href');
-    const qualityText = a.textContent.trim();
-    return {
-      url: href,
-      quality: qualityText || 'Download'
-    };
-  });
+  if (!variants.length) throw new Error('No downloadable video found.');
 
   return variants;
 }
@@ -82,9 +72,10 @@ function displayResults(variants, originalUrl) {
   }
 
   results.innerHTML = variants.map(v => {
+    const quality = v.height ? `${v.height}p` : 'Download';
     return `
       <div class="video-option">
-        <span>${v.quality}</span>
+        <span>${quality} — ${v.bitrate ? (v.bitrate / 1000).toFixed(0) + ' kbps' : ''}</span>
         <a href="${v.url}" download target="_blank">Download</a>
       </div>
     `;
