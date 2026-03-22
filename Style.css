@@ -1,0 +1,152 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f1117;
+  color: #e1e1e1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  background: #1a1d27;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+h1 {
+  font-size: 2rem;
+  color: #1d9bf0;
+  margin-bottom: 4px;
+}
+
+p.subtitle {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 28px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #2e3144;
+  background: #0f1117;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input[type="text"]:focus {
+  border-color: #1d9bf0;
+}
+
+button#fetchBtn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 14px;
+  background: #1d9bf0;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button#fetchBtn:hover {
+  background: #1a8cd8;
+}
+
+#results {
+  margin-top: 24px;
+}
+
+.video-option {
+  background: #0f1117;
+  border: 1px solid #2e3144;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.video-option span {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.video-option a {
+  background: #1d9bf0;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.video-option a:hover {
+  background: #1a8cd8;
+}
+
+.error {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
+
+#history {
+  margin-top: 36px;
+  border-top: 1px solid #2e3144;
+  padding-top: 20px;
+}
+
+#history h3 {
+  font-size: 1rem;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+#historyList {
+  list-style: none;
+  padding: 0;
+}
+
+#historyList li {
+  font-size: 0.8rem;
+  color: #555;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e2130;
+  word-break: break-all;
+}
+
+footer {
+  margin-top: 32px;
+  font-size: 0.82rem;
+  color: #555;
+  text-align: center;
+}
+
+footer a {
+  color: #1d9bf0;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
