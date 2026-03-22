@@ -1,7 +1,6 @@
 const SUPABASE_URL = 'https://ccmsjcnuyrngqxwrswfe.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjbXNqY251eXJuZ3F4d3Jzd2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2MjU2MjgsImV4cCI6MjA2NzIwMTYyOH0.dkjCo2bgDMf923VKESkyMLsULo7IhmsYb6r-4Dn6SRY';
 
-
 const fetchBtn = document.getElementById('fetchBtn');
 const tweetUrlInput = document.getElementById('tweetUrl');
 const results = document.getElementById('results');
@@ -41,18 +40,22 @@ function extractTweetId(url) {
 }
 
 async function fetchVideoLinks(tweetId) {
-  const guestTokenRes = await fetch('https://api.twitter.com/1.1/guest/activate.json', {
+  const proxy = 'https://corsproxy.io/?';
+
+  const BEARER = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LW81CePAwYQr0MvYaHkTMRKSyxGGtmFbxVQkYKm6o';
+
+  const guestTokenRes = await fetch(proxy + encodeURIComponent('https://api.twitter.com/1.1/guest/activate.json'), {
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LW81CePAwYQr0MvYaHkTMRKSyxGGtmFbxVQkYKm6o'
+      'Authorization': `Bearer ${BEARER}`
     }
   });
 
   const { guest_token } = await guestTokenRes.json();
 
-  const tweetRes = await fetch(`https://api.twitter.com/1.1/statuses/show.json?id=${tweetId}&tweet_mode=extended`, {
+  const tweetRes = await fetch(proxy + encodeURIComponent(`https://api.twitter.com/1.1/statuses/show.json?id=${tweetId}&tweet_mode=extended`), {
     headers: {
-      'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LW81CePAwYQr0MvYaHkTMRKSyxGGtmFbxVQkYKm6o',
+      'Authorization': `Bearer ${BEARER}`,
       'x-guest-token': guest_token
     }
   });
