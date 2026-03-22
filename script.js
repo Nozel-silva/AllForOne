@@ -23,7 +23,7 @@ fetchBtn.addEventListener('click', async () => {
     if (!tweetId) throw new Error('Could not extract tweet ID.');
 
     const videoData = await fetchVideoLinks(tweetId);
-    displayResults(videoData, url);
+    displayResults(videoData, url, tweetId);
     await saveToSupabase(url, tweetId);
     loadHistory();
   } catch (err) {
@@ -58,7 +58,7 @@ async function fetchVideoLinks(tweetId) {
   return data.variants;
 }
 
-function displayResults(variants, originalUrl) {
+function displayResults(variants, originalUrl, tweetId) {
   if (!variants.length) {
     results.innerHTML = '<p class="error">No downloadable video found.</p>';
     return;
@@ -70,8 +70,8 @@ function displayResults(variants, originalUrl) {
     return `
       <div class="video-option">
         <span>${quality} — ${v.bitrate ? (v.bitrate / 1000).toFixed(0) + ' kbps' : ''}</span>
-        <a href="${proxyUrl}" download="twitter_video.mp4">Download</a>
-      </div>
+        <a href="${proxyUrl}" download="${tweetId}_video.mp4">Download</a>
+        </div>
     `;
   }).join('');
 }
