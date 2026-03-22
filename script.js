@@ -64,9 +64,9 @@ function displayResults(variants, originalUrl, tweetId) {
     return;
   }
 
-  results.innerHTML = variants.map(v => {
+    results.innerHTML = variants.map(v => {
     const quality = v.height ? `${v.height}p` : 'Download';
-    const proxyUrl = `/api/video?downloadUrl=${encodeURIComponent(v.url)}`;
+    const proxyUrl = `/api/video?downloadUrl=${encodeURIComponent(v.url)}&filename=${tweetId}_video.mp4`;
     return `
       <div class="video-option">
         <span>${quality} — ${v.bitrate ? (v.bitrate / 1000).toFixed(0) + ' kbps' : ''}</span>
