@@ -10,7 +10,7 @@ fetchBtn.addEventListener('click', async () => {
   const url = tweetUrlInput.value.trim();
   results.innerHTML = '';
 
-  if (!url || !url.includes('twitter.com') && !url.includes('x.com')) {
+  if (!url || (!url.includes('twitter.com') && !url.includes('x.com'))) {
     results.innerHTML = '<p class="error">Please enter a valid Twitter/X URL.</p>';
     return;
   }
@@ -50,19 +50,12 @@ function extractTweetId(url) {
 }
 
 async function fetchVideoLinks(tweetId) {
-  const res = await fetch(`https://api.fxtwitter.com/status/${tweetId}`);
+  const res = await fetch(`/api/video?tweetId=${tweetId}`);
   const data = await res.json();
 
-  const media = data?.tweet?.media?.videos;
-  if (!media || !media.length) throw new Error('No video found in this tweet.');
+  if (data.error) throw new Error(data.error);
 
-  const variants = media[0].variants
-    .filter(v => v.content_type === 'video/mp4')
-    .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0));
-
-  if (!variants.length) throw new Error('No downloadable video found.');
-
-  return variants;
+  return data.variants;
 }
 
 function displayResults(variants, originalUrl) {
