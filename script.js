@@ -35,39 +35,42 @@ fetchBtn.addEventListener('click', async () => {
 });
 
 function extractTweetId(url) {
-  const match = url.match(/status\/(\d+)/);
-  return match ? match[1] : null;
+  const patterns = [
+    /status\/(\d+)/,
+    /statuses\/(\d+)/,
+    /\/(\d{10,})/
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+
+  return null;
 }
 
 async function fetchVideoLinks(tweetId) {
   const proxy = 'https://corsproxy.io/?';
+  const url = `https://twitsave.com/info?url=https://twitter.com/i/status/${tweetId}`;
 
-  const BEARER = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LW81CePAwYQr0MvYaHkTMRKSyxGGtmFbxVQkYKm6o';
+  const res = await fetch(proxy + encodeURIComponent(url));
+  const html = await res.text();
 
-  const guestTokenRes = await fetch(proxy + encodeURIComponent('https://api.twitter.com/1.1/guest/activate.json'), {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${BEARER}`
-    }
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  const downloadButtons = doc.querySelectorAll('a[href*=".mp4"]');
+
+  if (!downloadButtons.length) throw new Error('No video found in this tweet.');
+
+  const variants = Array.from(downloadButtons).map(a => {
+    const href = a.getAttribute('href');
+    const qualityText = a.textContent.trim();
+    return {
+      url: href,
+      quality: qualityText || 'Download'
+    };
   });
-
-  const { guest_token } = await guestTokenRes.json();
-
-  const tweetRes = await fetch(proxy + encodeURIComponent(`https://api.twitter.com/1.1/statuses/show.json?id=${tweetId}&tweet_mode=extended`), {
-    headers: {
-      'Authorization': `Bearer ${BEARER}`,
-      'x-guest-token': guest_token
-    }
-  });
-
-  const tweet = await tweetRes.json();
-
-  const media = tweet?.extended_entities?.media;
-  if (!media || media[0]?.type !== 'video') throw new Error('No video found in this tweet.');
-
-  const variants = media[0].video_info.variants
-    .filter(v => v.content_type === 'video/mp4')
-    .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0));
 
   return variants;
 }
@@ -79,10 +82,9 @@ function displayResults(variants, originalUrl) {
   }
 
   results.innerHTML = variants.map(v => {
-    const quality = v.bitrate >= 2176000 ? '720p' : v.bitrate >= 832000 ? '480p' : '360p';
     return `
       <div class="video-option">
-        <span>${quality} — ${(v.bitrate / 1000).toFixed(0)} kbps</span>
+        <span>${v.quality}</span>
         <a href="${v.url}" download target="_blank">Download</a>
       </div>
     `;
