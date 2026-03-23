@@ -44,7 +44,6 @@ export default async function handler(req, res) {
       });
 
       const data = await response.json();
-      return res.status(200).json({ debug: data });
 
       if (!data || data.error) return res.status(404).json({ error: 'No video found. Post may be private.' });
 
@@ -60,4 +59,4 @@ export default async function handler(req, res) {
       res.status(500).json({ error: err.message });
     }
   }
-        }
+}
