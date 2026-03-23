@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       res.send(Buffer.from(buffer));
       return;
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      
     }
   }
 
