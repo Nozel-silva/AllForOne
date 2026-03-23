@@ -44,8 +44,17 @@ export default async function handler(req, res) {
       });
 
       const data = await response.json();
-      console.log('RapidAPI response:', JSON.stringify(data));
-      return res.status(200).json({ debug: data });
+
+      if (!data || !data.length) return res.status(404).json({ error: 'No video found. Post may be private.' });
+
+      const item = data[0];
+      const videoUrl = item?.urls?.[0]?.url || null;
+      const thumbnail = item?.meta?.thumbnail || '';
+      const caption = item?.meta?.title || '';
+
+      if (!videoUrl) return res.status(404).json({ error: 'No video found in this post.' });
+
+      res.status(200).json({ videoUrl, thumbnail, caption, shortcode });
 
     } catch (err) {
       res.status(500).json({ error: err.message });
