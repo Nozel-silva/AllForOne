@@ -3,30 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>L.E.V.I - Twitter Video Downloader</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>L.E.V.I - Media Downloader</title>
+  <link rel="stylesheet" href="index.css" />
 </head>
 <body>
 
-  <div class="container">
-    <h1>L.E.V.I</h1>
-    <p class="subtitle">Twitter / X Video Downloader</p>
+  <!-- Ad Banner -->
+  <div class="ad-banner">
+    🚀 A.F.O is a L.E.V.I free to use system — no sign up required. Just paste and download.
+  </div>
 
-    <input type="text" id="tweetUrl" placeholder="Paste Twitter/X video URL here..." />
-    <button id="fetchBtn">Get Video</button>
-
-    <div id="results"></div>
-
-    <div id="history">
-      <h3>Recent Downloads</h3>
-      <ul id="historyList"></ul>
+  <!-- Email Popup -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <h2>Welcome to L.E.V.I 👋</h2>
+      <p>Enter your email to stay updated on new features and supported platforms.</p>
+      <input type="email" id="emailInput" placeholder="Enter your email address" />
+      <button id="submitEmail">Continue</button>
+      <p class="popup-error" id="popupError"></p>
     </div>
   </div>
 
-  <footer>
-    Built by <strong>L.E.V.I</strong>, courtesy of <a href="https://twitter.com/NuelSama" target="_blank">Nuel Sama</a>
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1 class="logo">L.E.V.I</h1>
+      <p class="tagline">Download videos and media from your favourite platforms — fast, free and simple.</p>
+      <a href="#platforms" class="hero-btn">Explore Tools</a>
+    </div>
+    <div class="hero-bg"></div>
+  </header>
+
+  <!-- Platforms -->
+  <section class="platforms" id="platforms">
+    <h2 class="section-title">Available Tools</h2>
+    <div class="cards">
+
+      <div class="card twitter">
+        <div class="card-icon">🐦</div>
+        <h3>Twitter / X</h3>
+        <p>Download videos and GIFs from any public Twitter or X post in multiple qualities.</p>
+        <a href="X.html" class="card-btn">Open Tool</a>
+      </div>
+
+      <div class="card instagram">
+        <div class="card-icon">📸</div>
+        <h3>Instagram</h3>
+        <p>Download Reels, videos and posts directly from Instagram with one click.</p>
+        <a href="ig.html" class="card-btn">Open Tool</a>
+      </div>
+
+      <div class="card spotify">
+        <div class="card-icon">🎵</div>
+        <h3>Spotify</h3>
+        <p>Convert Spotify tracks to MP3 using YouTube as the audio source. Coming soon.</p>
+        <span class="card-btn disabled">In Progress</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Built by <strong>L.E.V.I</strong>, courtesy of <a href="https://twitter.com/NuelSama" target="_blank">Nuel Sama</a></p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>
