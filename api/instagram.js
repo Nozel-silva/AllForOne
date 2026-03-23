@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // Fetch Instagram video
+  // Fetch Instagram video via RapidAPI
   if (igUrl) {
     try {
       const cleanUrl = decodeURIComponent(igUrl).split('?')[0];
@@ -33,26 +33,46 @@ export default async function handler(req, res) {
 
       if (!shortcode) return res.status(400).json({ error: 'Invalid Instagram URL' });
 
-      const graphqlUrl = `https://www.instagram.com/graphql/query/?query_hash=b3055c01b4b222b8a47dc12b090e4e64&variables=${encodeURIComponent(JSON.stringify({ shortcode }))}`;
+      // Try reels endpoint first, then posts
+      let videoUrl = null;
+      let thumbnail = '';
+      let caption = '';
 
-      const response = await fetch(graphqlUrl, {
+      const reelsRes = await fetch('https://instagram120.p.rapidapi.com/api/instagram/reels', {
+        method: 'POST',
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
-          'Referer': 'https://www.instagram.com/',
-          'X-IG-App-ID': '936619743392459'
-        }
+          'Content-Type': 'application/json',
+          'x-rapidapi-host': 'instagram120.p.rapidapi.com',
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY
+        },
+        body: JSON.stringify({ username: shortcode, maxId: '' })
       });
 
-      const data = await response.json();
-      const media = data?.data?.shortcode_media;
+      const reelsData = await reelsRes.json();
 
-      if (!media) return res.status(404).json({ error: 'Could not fetch video. Post may be private.' });
+      if (reelsData?.video_url) {
+        videoUrl = reelsData.video_url;
+        thumbnail = reelsData.thumbnail_url || '';
+        caption = reelsData.caption || '';
+      } else {
+        // Fallback to posts endpoint
+        const postsRes = await fetch('https://instagram120.p.rapidapi.com/api/instagram/posts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-rapidapi-host': 'instagram120.p.rapidapi.com',
+            'x-rapidapi-key': process.env.RAPIDAPI_KEY
+          },
+          body: JSON.stringify({ username: shortcode, maxId: '' })
+        });
 
-      if (!media.is_video) return res.status(400).json({ error: 'This post does not contain a video.' });
+        const postsData = await postsRes.json();
+        videoUrl = postsData?.video_url || postsData?.items?.[0]?.video_url || null;
+        thumbnail = postsData?.thumbnail_url || postsData?.items?.[0]?.thumbnail_url || '';
+        caption = postsData?.caption || postsData?.items?.[0]?.caption || '';
+      }
 
-      const videoUrl = media.video_url;
-      const thumbnail = media.thumbnail_src;
-      const caption = media.edge_media_to_caption?.edges?.[0]?.node?.text || '';
+      if (!videoUrl) return res.status(404).json({ error: 'No video found. Post may be private.' });
 
       res.status(200).json({ videoUrl, thumbnail, caption, shortcode });
 
@@ -60,4 +80,4 @@ export default async function handler(req, res) {
       res.status(500).json({ error: err.message });
     }
   }
-}
+  }
