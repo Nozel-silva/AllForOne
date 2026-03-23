@@ -41,7 +41,7 @@ function displayResults(data) {
 
   results.innerHTML = `
     <div class="video-card">
-      <img src="/api/instagram?downloadUrl=${encodeURIComponent(data.thumbnail)}&filename=thumb.jpg" alt="Thumbnail" />
+      <img src="${data.thumbnail}" alt="Thumbnail" onerror="this.style.display='none'" />
       <div class="caption">${data.caption || 'No caption'}</div>
     </div>
     <a href="${proxyUrl}" class="download-btn" download="${data.shortcode}_video.mp4">Download Video</a>
