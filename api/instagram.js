@@ -44,16 +44,8 @@ export default async function handler(req, res) {
       });
 
       const data = await response.json();
-
-      if (!data || data.error) return res.status(404).json({ error: 'No video found. Post may be private.' });
-
-      const videoUrl = data?.video_url || data?.items?.[0]?.video_url || null;
-      const thumbnail = data?.thumbnail_url || data?.display_url || data?.items?.[0]?.thumbnail_url || '';
-      const caption = data?.caption || data?.edge_media_to_caption?.edges?.[0]?.node?.text || '';
-
-      if (!videoUrl) return res.status(404).json({ error: 'No video found in this post.' });
-
-      res.status(200).json({ videoUrl, thumbnail, caption, shortcode });
+      console.log('RapidAPI response:', JSON.stringify(data));
+      return res.status(200).json({ debug: data });
 
     } catch (err) {
       res.status(500).json({ error: err.message });
