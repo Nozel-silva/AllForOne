@@ -33,46 +33,25 @@ export default async function handler(req, res) {
 
       if (!shortcode) return res.status(400).json({ error: 'Invalid Instagram URL' });
 
-      // Try reels endpoint first, then posts
-      let videoUrl = null;
-      let thumbnail = '';
-      let caption = '';
-
-      const reelsRes = await fetch('https://instagram120.p.rapidapi.com/api/instagram/reels', {
+      const response = await fetch('https://instagram120.p.rapidapi.com/api/instagram/mediaByShortcode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-rapidapi-host': 'instagram120.p.rapidapi.com',
           'x-rapidapi-key': process.env.RAPIDAPI_KEY
         },
-        body: JSON.stringify({ username: shortcode, maxId: '' })
+        body: JSON.stringify({ shortcode })
       });
 
-      const reelsData = await reelsRes.json();
+      const data = await response.json();
 
-      if (reelsData?.video_url) {
-        videoUrl = reelsData.video_url;
-        thumbnail = reelsData.thumbnail_url || '';
-        caption = reelsData.caption || '';
-      } else {
-        // Fallback to posts endpoint
-        const postsRes = await fetch('https://instagram120.p.rapidapi.com/api/instagram/posts', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-rapidapi-host': 'instagram120.p.rapidapi.com',
-            'x-rapidapi-key': process.env.RAPIDAPI_KEY
-          },
-          body: JSON.stringify({ username: shortcode, maxId: '' })
-        });
+      if (!data || data.error) return res.status(404).json({ error: 'No video found. Post may be private.' });
 
-        const postsData = await postsRes.json();
-        videoUrl = postsData?.video_url || postsData?.items?.[0]?.video_url || null;
-        thumbnail = postsData?.thumbnail_url || postsData?.items?.[0]?.thumbnail_url || '';
-        caption = postsData?.caption || postsData?.items?.[0]?.caption || '';
-      }
+      const videoUrl = data?.video_url || data?.items?.[0]?.video_url || null;
+      const thumbnail = data?.thumbnail_url || data?.display_url || data?.items?.[0]?.thumbnail_url || '';
+      const caption = data?.caption || data?.edge_media_to_caption?.edges?.[0]?.node?.text || '';
 
-      if (!videoUrl) return res.status(404).json({ error: 'No video found. Post may be private.' });
+      if (!videoUrl) return res.status(404).json({ error: 'No video found in this post.' });
 
       res.status(200).json({ videoUrl, thumbnail, caption, shortcode });
 
@@ -80,4 +59,4 @@ export default async function handler(req, res) {
       res.status(500).json({ error: err.message });
     }
   }
-  }
+        }
