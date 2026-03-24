@@ -14,7 +14,7 @@ submitEmail.addEventListener('click', async () => {
     return;
   }
 
-  submitEmail.textContent = 'Saving...';
+  submitEmail.textContent = 'Processing...';
   submitEmail.disabled = true;
   popupError.textContent = '';
 
